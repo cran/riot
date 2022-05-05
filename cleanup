@@ -1,0 +1,3 @@
+#! /bin/sh
+
+rm -fr src/vtk src/*.o src/*.so

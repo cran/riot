@@ -1,0 +1,8 @@
+CXX_STD = CXX11
+PKG_CPPFLAGS = -Ivtk/include/vtk
+PKG_LIBS= \
+	-Lvtk/lib \
+	-lvtkIOXML -lvtkIOXMLParser -lvtkIOCore -lvtkIOLegacy \
+	-lvtkCommonExecutionModel -lvtkCommonDataModel -lvtkCommonTransforms \
+	-lvtkCommonMath -lvtkCommonMisc -lvtkCommonSystem -lvtkCommonCore \
+	-lvtkdoubleconversion -lvtkexpat -lvtklz4 -lvtklzma -lvtksys -lvtkzlib
