@@ -1,4 +1,4 @@
-VERSION=9.0.1-1
+VERSION=9.2.4
 RWINLIB=../windows/vtk-$(VERSION)
 CXX_STD=CXX11
 PKG_CPPFLAGS=-I$(RWINLIB)/include/vtk
@@ -8,8 +8,8 @@ PKG_LIBS= \
 	-lvtkIOXML -lvtkIOXMLParser -lvtkIOCore -lvtkIOLegacy \
 	-lvtkCommonExecutionModel -lvtkCommonDataModel -lvtkCommonTransforms \
 	-lvtkCommonMath -lvtkCommonMisc -lvtkCommonSystem -lvtkCommonCore \
-	-lvtkdoubleconversion -lvtkexpat -lvtklz4 -lvtklzma -lvtksys -lvtkzlib \
-	-lgdi32
+	-lvtkdoubleconversion -lvtkexpat -lvtklz4 -lvtklzma -lvtkpugixml -lvtksys \
+	-lvtkzlib -lgdi32
 
 all: clean winlibs
 

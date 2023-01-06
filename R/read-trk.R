@@ -62,63 +62,48 @@ read_trk <- function(input_file) {
   if (header$hdr_size != 1000L)
     cli::cli_alert_warning("TRK file {.file {input_file}} header field hdr_size is
                            {header$hdr_size}, must be 1000.")
-  tracks <- lapply(1L:header$n_count, function(str_id) {
+  tracks <- purrr::map(seq_len(header$n_count), ~ {
     num_points <- readBin(fh, integer(), n = 1, size = 4, endian = endian)
     current_track <- tibble::tibble(
       X = rep(0, num_points),
       Y = rep(0, num_points),
       Z = rep(0, num_points),
-      PointId = 1:num_points,
-      StreamlineId = str_id
+      PointId = seq_len(num_points),
+      StreamlineId = .x
     )
-    current_track_coords <- matrix(rep(NA, (num_points * 3L)), ncol = 3)
-    if (header$n_scalars > 0L) {
-      current_track_scalars <- matrix(
-        rep(NA, (num_points * header$n_scalars)),
-        ncol = header$n_scalars
-      )
-      for (nm in header$scalar_names)
-        current_track[nm] <- rep(0, num_points)
-    }
-    if (num_points > 0L) {
-      for (track_point_idx in 1L:num_points) {
-        current_track_coords[track_point_idx, ] <- readBin(
-          fh, numeric(),
-          n = 3,
-          size = 4,
-          endian = endian
-        )
-        current_track$X <- current_track_coords[, 1]
-        current_track$Y <- current_track_coords[, 2]
-        current_track$Z <- current_track_coords[, 3]
-        if (header$n_scalars > 0L) {
-          current_track_scalars[track_point_idx, ] <- readBin(
-            fh, numeric(),
-            n = header$n_scalars,
-            size = 4,
-            endian = endian
-          )
-          for (i in 1L:header$n_scalars)
-            current_track[header$scalar_names[i]] <- current_track_scalars[, i]
-        }
-      }
-    }
-    if (header$n_properties > 0L) {
-      current_track_properties <- matrix(
-        readBin(
-          fh, numeric(),
-          n = header$n_properties,
-          size = 4,
-          endian = endian
-        ),
-        ncol = header$n_properties
-      )
-      for (i in 1L:header$n_properties)
-        current_track[header$property_names[i]] <- current_track_properties[, i]
-    }
+
+    tmp <- matrix(readBin(
+      fh, numeric(),
+      n = (3 + header$n_scalars) * num_points,
+      size = 4,
+      endian = endian
+    ), ncol = num_points)
+
+    current_track$X <- tmp[1, ]
+    current_track$Y <- tmp[2, ]
+    current_track$Z <- tmp[3, ]
+    for (i in seq_len(header$n_scalars))
+      current_track[header$scalar_names[i]] <- tmp[3 + i, ]
+
+    tmp <- readBin(fh, numeric(), n = header$n_properties, size = 4, endian = endian)
+    for (i in seq_len(header$n_properties))
+      current_track[header$property_names[i]] <- tmp[i]
+
     current_track
   })
-  tracks <- Reduce(rbind, tracks)
-  class(tracks) <- c("maf_df", class(tracks))
+  tracks <- dplyr::bind_rows(tracks)
+
+  A <- header$vox2ras[1:3, 1:3]
+  b <- header$vox2ras[1:3, 4]
+  if (sum((A - diag(rep(1, 3)))^2) != 0 || sum((b - rep(0, 3))^2) != 0) {
+    cli::cli_alert_info("Transforming voxel to real coordinates using rotation matrix {A} and translation vector {b}...")
+    new_coords <- list(tracks$X, tracks$Y, tracks$Z)
+    new_coords <- purrr::pmap(new_coords, c)
+    new_coords <- purrr::map(new_coords, ~ A %*% .x + b)
+    tracks$X <- purrr::map_dbl(new_coords, 1)
+    tracks$Y <- purrr::map_dbl(new_coords, 2)
+    tracks$Z <- purrr::map_dbl(new_coords, 3)
+  }
+
   tracks
 }

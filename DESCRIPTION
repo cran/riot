@@ -1,12 +1,12 @@
 Package: riot
 Title: R Inputs/Outputs for Tractography
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: c(
     person(
         given = "Aymeric",
         family = "Stamm",
         role = c("aut", "cre"),
-        email = "aymeric.stamm@math.cnrs.fr",
+        email = "aymeric.stamm@cnrs.fr",
         comment = c(ORCID = "0000-0002-8725-3654")
     ),
     person(
@@ -33,9 +33,9 @@ Description: An input-output interface for reading in and writing out common
     studying brain structural connectivity.
 License: MIT + file LICENSE
 Encoding: UTF-8
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.3
 LinkingTo: Rcpp
-Imports: Rcpp, readr, fs, cli, rlang, tibble
+Imports: Rcpp, readr, fs, cli, rlang, tibble, purrr, dplyr
 URL: https://github.com/astamm/riot
 BugReports: https://github.com/astamm/riot/issues
 Suggests: covr, testthat (>= 3.0.0), withr
@@ -43,11 +43,11 @@ SystemRequirements: cmake (>= 3.15.0) used only but systematically on
         macOS and Linux platforms to build VTK from source.
 Config/testthat/edition: 3
 NeedsCompilation: yes
-Packaged: 2022-05-10 10:18:17 UTC; stamm-a
+Packaged: 2023-01-06 21:00:37 UTC; stamm-a
 Author: Aymeric Stamm [aut, cre] (<https://orcid.org/0000-0002-8725-3654>),
   Jeroen Ooms [ctb],
   Lee Thomason [ctb] (Author of the TinyXML2 C++ XML parser),
   Tim Schäfer [ctb] (Author of the freesurferformats R package)
-Maintainer: Aymeric Stamm <aymeric.stamm@math.cnrs.fr>
+Maintainer: Aymeric Stamm <aymeric.stamm@cnrs.fr>
 Repository: CRAN
-Date/Publication: 2022-05-10 13:10:02 UTC
+Date/Publication: 2023-01-07 00:10:02 UTC
